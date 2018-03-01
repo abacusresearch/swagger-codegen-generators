@@ -108,11 +108,12 @@ public class {{{getClassDefinition}}} {
         super.equals(o){{/parent}};{{/has}}{{#hasNot this 'vars'}}
     return {{#parent}}super.equals(o){{/parent}}{{^parent}}true{{/parent}};{{/hasNot}}
   }
-
+  {{^vars.empty}}
   @Override
   public int hashCode() {
-    return Objects.hash({{#vars}}{{name}}{{#has this 'more'}}, {{/has}}{{/vars}}{{#if parent}}{{#has this 'vars'}}, {{/has}}super.hashCode(){{/if}});
+    return Objects.hash({{#vars}}{{name}}{{#has this 'more'}}, {{/has}}{{/vars}}{{#if parent}}{{^vars.empty}}, {{/vars.empty}}super.hashCode(){{/if}});
   }
+  {{/vars.empty}}
   {{/supportJava6~}}
   {{#supportJava6~}}
   @Override
