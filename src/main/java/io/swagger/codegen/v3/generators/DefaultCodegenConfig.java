@@ -233,7 +233,7 @@ public abstract class DefaultCodegenConfig implements CodegenConfig {
             // not set in additionalProperties, add value from CodegenConfig in order to use it in templates
             additionalProperties.put(CodegenConstants.HIDE_GENERATION_TIMESTAMP, hideGenerationTimestamp);
         }
-        
+
         if (additionalProperties.containsKey(CodegenConstants.USE_OAS2)) {
             this.setUseOas2(Boolean.valueOf(additionalProperties.get(CodegenConstants.USE_OAS2).toString()));
         }
@@ -1327,10 +1327,10 @@ public abstract class DefaultCodegenConfig implements CodegenConfig {
                     addImport(codegenModel, modelName);
                     if (allDefinitions != null && refSchema != null) {
                         if (!supportsMixins) {
-                            addProperties(properties, required, refSchema, allDefinitions);
+                            addProperties(properties, required, refSchema, allDefinitions, parent);
                         }
                         if (supportsInheritance) {
-                            addProperties(allProperties, allRequired, refSchema, allDefinitions);
+                            addProperties(allProperties, allRequired, refSchema, allDefinitions, parent);
                         }
                     }
                 }
@@ -1341,13 +1341,14 @@ public abstract class DefaultCodegenConfig implements CodegenConfig {
                 addImport(codegenModel, codegenModel.parent);
                 if (allDefinitions != null) {
                     if (supportsInheritance) {
-                        addProperties(allProperties, allRequired, parent, allDefinitions);
+                        addProperties(allProperties, allRequired, parent, allDefinitions, parent);
                     } else {
-                        addProperties(properties, required, parent, allDefinitions);
+                        addProperties(properties, required, parent, allDefinitions, parent);
                     }
                 }
             }
-            addProperties(properties, required, composed, allDefinitions);
+
+            addProperties(properties, required, composed, allDefinitions, parent);
             addVars(codegenModel, properties, required, allProperties, allRequired);
         } else {
             codegenModel.dataType = getSchemaType(schema);
@@ -1357,14 +1358,18 @@ public abstract class DefaultCodegenConfig implements CodegenConfig {
                 codegenModel.allowableValues = new HashMap<String, Object>();
                 codegenModel.allowableValues.put("values", schema.getEnum());
             }
-            addVars(codegenModel, schema.getProperties(), schema.getRequired());
+            if (schema.getAdditionalProperties() != null) {
+                addAdditionPropertiesToCodeGenModel(codegenModel, schema);
+            }
         }
+        addVars(codegenModel, schema.getProperties(), schema.getRequired());
 
         if (codegenModel.vars != null) {
             for(CodegenProperty prop : codegenModel.vars) {
                 postProcessModelProperty(codegenModel, prop);
             }
         }
+
         return codegenModel;
     }
 
@@ -1394,20 +1399,23 @@ public abstract class DefaultCodegenConfig implements CodegenConfig {
         addParentContainer(codegenModel, codegenModel.name, schema);
     }
 
-    protected void addProperties(Map<String, Schema> properties, List<String> required, Schema schema, Map<String, Schema> allSchemas) {
+    protected void addProperties(Map<String, Schema> properties, List<String> required, Schema schema, Map<String, Schema> allSchemas, Schema parent) {
+        if(schema == parent)
+            return;
+
         if(schema instanceof ComposedSchema) {
             ComposedSchema composedSchema = (ComposedSchema) schema;
             if(composedSchema.getAllOf() == null || composedSchema.getAllOf().isEmpty() || composedSchema.getAllOf().size() == 1) {
                 return;
             }
             for (int i = 1; i < composedSchema.getAllOf().size(); i++) {
-                addProperties(properties, required, composedSchema.getAllOf().get(i), allSchemas);
+                addProperties(properties, required, composedSchema.getAllOf().get(i), allSchemas, parent);
             }
             return;
         }
         if(StringUtils.isNotBlank(schema.get$ref())) {
             Schema interfaceSchema = allSchemas.get(OpenAPIUtil.getSimpleRef(schema.get$ref()));
-            addProperties(properties, required, interfaceSchema, allSchemas);
+            addProperties(properties, required, interfaceSchema, allSchemas, parent);
             return;
         }
         if(schema.getProperties() != null) {
@@ -3763,7 +3771,7 @@ public abstract class DefaultCodegenConfig implements CodegenConfig {
     public void setIgnoreFilePathOverride(final String ignoreFileOverride) {
         this.ignoreFilePathOverride = ignoreFileOverride;
     }
-    
+
     public void setUseOas2(boolean useOas2) {
         this.useOas2 = useOas2;
     }
@@ -3882,11 +3890,11 @@ public abstract class DefaultCodegenConfig implements CodegenConfig {
             String bodyName = OpenAPIUtil.getSimpleRef(body.get$ref());
             body = openAPI.getComponents().getRequestBodies().get(bodyName);
         }
-        
+
         if (body.getContent() == null || body.getContent().isEmpty()) {
             return;
         }
-        
+
         Set<String> consumes = body.getContent().keySet();
         List<Map<String, String>> mediaTypeList = new ArrayList<>();
         int count = 0;
@@ -4032,7 +4040,7 @@ public abstract class DefaultCodegenConfig implements CodegenConfig {
         if (parameter.getExplode() == null || parameter.getExplode()) {
             return "multi";
         }
-        
+
         // Form is the default, if no style is specified.
         if (parameter.getStyle() == null || Parameter.StyleEnum.FORM.equals(parameter.getStyle())) {
             return "csv";
