@@ -1285,10 +1285,10 @@ public abstract class DefaultCodegenConfig implements CodegenConfig {
                     addImport(codegenModel, modelName);
                     if (allDefinitions != null && refSchema != null) {
                         if (!supportsMixins) {
-                            addProperties(properties, required, refSchema, allDefinitions);
+                            addProperties(properties, required, refSchema, allDefinitions, parent);
                         }
                         if (supportsInheritance) {
-                            addProperties(allProperties, allRequired, refSchema, allDefinitions);
+                            addProperties(allProperties, allRequired, refSchema, allDefinitions, parent);
                         }
                     }
                 }
@@ -1299,13 +1299,14 @@ public abstract class DefaultCodegenConfig implements CodegenConfig {
                 addImport(codegenModel, codegenModel.parent);
                 if (allDefinitions != null) {
                     if (supportsInheritance) {
-                        addProperties(allProperties, allRequired, parent, allDefinitions);
+                        addProperties(allProperties, allRequired, parent, allDefinitions, parent);
                     } else {
-                        addProperties(properties, required, parent, allDefinitions);
+                        addProperties(properties, required, parent, allDefinitions, parent);
                     }
                 }
             }
-            addProperties(properties, required, composed, allDefinitions);
+
+            addProperties(properties, required, composed, allDefinitions, parent);
             addVars(codegenModel, properties, required, allProperties, allRequired);
         } else {
             codegenModel.dataType = getSchemaType(schema);
@@ -1318,14 +1319,15 @@ public abstract class DefaultCodegenConfig implements CodegenConfig {
             if (schema.getAdditionalProperties() != null) {
                 addAdditionPropertiesToCodeGenModel(codegenModel, schema);
             }
-            addVars(codegenModel, schema.getProperties(), schema.getRequired());
         }
+        addVars(codegenModel, schema.getProperties(), schema.getRequired());
 
         if (codegenModel.vars != null) {
             for(CodegenProperty prop : codegenModel.vars) {
                 postProcessModelProperty(codegenModel, prop);
             }
         }
+
         return codegenModel;
     }
 
@@ -1355,20 +1357,23 @@ public abstract class DefaultCodegenConfig implements CodegenConfig {
         addParentContainer(codegenModel, codegenModel.name, schema);
     }
 
-    protected void addProperties(Map<String, Schema> properties, List<String> required, Schema schema, Map<String, Schema> allSchemas) {
+    protected void addProperties(Map<String, Schema> properties, List<String> required, Schema schema, Map<String, Schema> allSchemas, Schema parent) {
+        if(schema == parent)
+            return;
+
         if(schema instanceof ComposedSchema) {
             ComposedSchema composedSchema = (ComposedSchema) schema;
             if(composedSchema.getAllOf() == null) {
                 return;
             }
             for (Schema component : composedSchema.getAllOf()) {
-                addProperties(properties, required, component, allSchemas);
+                addProperties(properties, required, component, allSchemas, parent);
             }
             return;
         }
         if(StringUtils.isNotBlank(schema.get$ref())) {
             Schema interfaceSchema = allSchemas.get(getSimpleRef(schema.get$ref()));
-            addProperties(properties, required, interfaceSchema, allSchemas);
+            addProperties(properties, required, interfaceSchema, allSchemas, parent);
             return;
         }
         if(schema.getProperties() != null) {
