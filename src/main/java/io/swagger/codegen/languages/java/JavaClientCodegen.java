@@ -1,36 +1,24 @@
 package io.swagger.codegen.languages.java;
 
-import static io.swagger.codegen.CodegenConstants.IS_ENUM_EXT_NAME;
-import static io.swagger.codegen.languages.helpers.ExtensionHelper.getBooleanValue;
-import static java.util.Collections.sort;
-
-import io.swagger.codegen.CliOption;
-import io.swagger.codegen.CodegenConstants;
-import io.swagger.codegen.CodegenModel;
-import io.swagger.codegen.CodegenOperation;
-import io.swagger.codegen.CodegenParameter;
-import io.swagger.codegen.CodegenProperty;
-import io.swagger.codegen.CodegenType;
-import io.swagger.codegen.SupportingFile;
+import io.swagger.codegen.*;
 import io.swagger.codegen.languages.features.BeanValidationFeatures;
 import io.swagger.codegen.languages.features.GzipFeatures;
 import io.swagger.codegen.languages.features.PerformBeanValidationFeatures;
-
+import io.swagger.v3.oas.models.media.Discriminator;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
+
+import static io.swagger.codegen.CodegenConstants.IS_ENUM_EXT_NAME;
+import static io.swagger.codegen.languages.helpers.ExtensionHelper.getBooleanValue;
+import static java.util.Collections.sort;
 
 public class JavaClientCodegen extends AbstractJavaCodegen implements BeanValidationFeatures, PerformBeanValidationFeatures, GzipFeatures {
     static final String MEDIA_TYPE = "mediaType";
@@ -554,13 +542,29 @@ public class JavaClientCodegen extends AbstractJavaCodegen implements BeanValida
                 Map<String, Object> child = new HashMap<>();
                 child.put("name", model.name);
                 child.put("classname", model.classname);
+                String discriminatorValue = getDiscriminatorValue(parentModel.discriminator, model);
+                if (discriminatorValue != null)
+                    child.put("discriminatorValue", discriminatorValue);
+                LOGGER.error("%s is not mapped in the discriminator definition of %s", model.classname, parentModel.name);
                 childrenList.add(child);
             }
             parent.put("children", childrenList);
             parent.put("discriminator", parentModel.discriminator);
+            String discriminatorValue = getDiscriminatorValue(parentModel.discriminator, parentModel);
+            if (discriminatorValue != null)
+                parent.put("discriminatorValue", discriminatorValue);
             parentsList.add(parent);
         }
         return parentsList;
+    }
+
+    private String getDiscriminatorValue(@Nullable Discriminator discriminator, @Nonnull CodegenModel model) {
+        if(discriminator != null)
+            for(Map.Entry<String, String> mappingEntry : discriminator.getMapping().entrySet()) {
+                if(mappingEntry.getValue().endsWith("/" + model.classname))
+                    return mappingEntry.getKey();
+            }
+        return null;
     }
 
     public void setUseRxJava(boolean useRxJava) {
