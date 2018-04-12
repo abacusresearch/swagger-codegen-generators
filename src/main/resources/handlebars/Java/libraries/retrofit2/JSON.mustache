@@ -59,13 +59,15 @@ public class JSON {
         GsonFireBuilder fireBuilder = new GsonFireBuilder()
         {{#parent}}
           .registerTypeSelector({{classname}}.class, new TypeSelector() {
+            Map<String, Class> classByDiscriminatorValue = new HashMap<>();
+
+            {
+                {{#children}}{{#discriminatorValue}}classByDiscriminatorValue.put("{{discriminatorValue}}", {{classname}}.class);
+                {{/discriminatorValue}}{{/children}}
+            }
+
             @Override
             public Class getClassForElement(JsonElement readElement) {
-                Map classByDiscriminatorValue = new HashMap();
-                {{#children}}
-                classByDiscriminatorValue.put("{{name}}".toUpperCase(), {{classname}}.class);
-                {{/children}}
-                classByDiscriminatorValue.put("{{classname}}".toUpperCase(), {{classname}}.class);
                 return getClassByDiscriminator(
                             classByDiscriminatorValue,
                             getDiscriminatorValue(readElement, "{{discriminator.propertyName}}"));
@@ -85,7 +87,7 @@ public class JSON {
     }
 
     private static Class getClassByDiscriminator(Map classByDiscriminatorValue, String discriminatorValue) {
-        Class clazz = (Class) classByDiscriminatorValue.get(discriminatorValue.toUpperCase());
+        Class clazz = (Class) classByDiscriminatorValue.get(discriminatorValue);
         if(null == clazz) {
             throw new IllegalArgumentException("cannot determine model class of name: <" + discriminatorValue + ">");
         }

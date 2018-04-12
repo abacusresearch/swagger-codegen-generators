@@ -11,11 +11,14 @@ import io.swagger.codegen.v3.SupportingFile;
 import io.swagger.codegen.v3.generators.features.BeanValidationFeatures;
 import io.swagger.codegen.v3.generators.features.GzipFeatures;
 import io.swagger.codegen.v3.generators.features.PerformBeanValidationFeatures;
+import io.swagger.v3.oas.models.media.Discriminator;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -555,13 +558,29 @@ public class JavaClientCodegen extends AbstractJavaCodegen implements BeanValida
                 Map<String, Object> child = new HashMap<>();
                 child.put("name", model.name);
                 child.put("classname", model.classname);
+                String discriminatorValue = getDiscriminatorValue(parentModel.discriminator, model);
+                if (discriminatorValue != null)
+                    child.put("discriminatorValue", discriminatorValue);
+                LOGGER.error("%s is not mapped in the discriminator definition of %s", model.classname, parentModel.name);
                 childrenList.add(child);
             }
             parent.put("children", childrenList);
             parent.put("discriminator", parentModel.discriminator);
+            String discriminatorValue = getDiscriminatorValue(parentModel.discriminator, parentModel);
+            if (discriminatorValue != null)
+                parent.put("discriminatorValue", discriminatorValue);
             parentsList.add(parent);
         }
         return parentsList;
+    }
+
+    private String getDiscriminatorValue(@Nullable Discriminator discriminator, @Nonnull CodegenModel model) {
+        if(discriminator != null)
+            for(Map.Entry<String, String> mappingEntry : discriminator.getMapping().entrySet()) {
+                if(mappingEntry.getValue().endsWith("/" + model.classname))
+                    return mappingEntry.getKey();
+            }
+        return null;
     }
 
     public void setUseRxJava(boolean useRxJava) {
