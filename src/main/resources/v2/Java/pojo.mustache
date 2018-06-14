@@ -56,6 +56,9 @@ public class {{{getClassDefinition}}} {
       this.{{name}} = {{{defaultValue}}};
     }
     {{/required}}
+    if (this.{{name}} == null) {
+      this.{{name}} = new java.util.ArrayList<>();
+    }
     this.{{name}}.add({{name}}Item);
     return this;
   }
@@ -66,6 +69,9 @@ public class {{{getClassDefinition}}} {
       this.{{name}} = {{{defaultValue}}};
     }
     {{/required}}
+    if (this.{{name}} == null) {
+      this.{{name}} = new java.util.LinkedHashMap<>();
+    }
     this.{{name}}.put(key, {{name}}Item);
     return this;
   }{{/is~}}
