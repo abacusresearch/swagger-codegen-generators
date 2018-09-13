@@ -994,7 +994,11 @@ public abstract class DefaultCodegenConfig implements CodegenConfig {
      */
     @SuppressWarnings("static-method")
     public String toDefaultValue(Schema property) {
-        return String.valueOf(property.getDefault());
+        Object defaultValue = property.getDefault();
+        if(property.getEnum() != null) {
+            return defaultValue != null ? String.valueOf(defaultValue) : null;
+        } else
+            return String.valueOf(defaultValue);
     }
 
     /**
