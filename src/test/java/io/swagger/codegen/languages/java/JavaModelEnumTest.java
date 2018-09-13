@@ -35,7 +35,7 @@ public class JavaModelEnumTest {
         Assert.assertEquals(enumVar.datatype, "String");
         Assert.assertEquals(enumVar.datatypeWithEnum, "NameEnum");
         Assert.assertEquals(enumVar.name, "name");
-        Assert.assertEquals(enumVar.defaultValue, "null");
+        Assert.assertNull(enumVar.defaultValue);
         Assert.assertEquals(enumVar.baseType, "String");
         Assert.assertTrue(getBooleanValue(enumVar, IS_ENUM_EXT_NAME));
         CodegenProperty baseItems = BaseItemsHelper.getBaseItemsProperty(enumVar);
@@ -66,7 +66,7 @@ public class JavaModelEnumTest {
         Assert.assertEquals(baseItems.datatype, "String");
         Assert.assertEquals(baseItems.datatypeWithEnum, "NameEnum");
         Assert.assertEquals(baseItems.name, "name");
-        Assert.assertEquals(baseItems.defaultValue, "null");
+        Assert.assertNull(baseItems.defaultValue);
         Assert.assertEquals(baseItems.baseType, "String");
     }
 
@@ -95,7 +95,7 @@ public class JavaModelEnumTest {
         Assert.assertEquals(baseItems.datatype, "String");
         Assert.assertEquals(baseItems.datatypeWithEnum, "NameEnum");
         Assert.assertEquals(baseItems.name, "name");
-        Assert.assertEquals(baseItems.defaultValue, "null");
+        Assert.assertNull(baseItems.defaultValue);
         Assert.assertEquals(baseItems.baseType, "String");
     }
 
