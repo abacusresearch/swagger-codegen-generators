@@ -1,15 +1,15 @@
-sudo: false
 language: java
-script: mvn clean verify
 jdk:
   - openjdk8
+
+cache:
+  directories:
+  - $HOME/.m2
+
+install: true #skip the install step using true (success)
+
+script:
+  - mvn --settings .travis/settings-abacus.xml clean verify
+
 after_success:
-  - if [ $SONATYPE_USERNAME ] && [ -z $TRAVIS_TAG ] && [ "$TRAVIS_BRANCH" = "master" ]; then
-      mvn clean deploy --settings .travis/settings.xml;
-      echo "Finished mvn clean deploy for $TRAVIS_BRANCH";
-    fi;
-  - mvn deploy --settings .travis/settings-abacus.xml -DaltDeploymentRepository=open-nexus-snapshots::default::https://open-nexus.abacus.ch/repository/maven-snapshots/
-branches:
-  only:
-  - master
-  - master-abacus
+  - mvn --settings .travis/settings-abacus.xml deploy -DaltDeploymentRepository=open-nexus-snapshots::default::https://open-nexus.abacus.ch/repository/maven-snapshots/
