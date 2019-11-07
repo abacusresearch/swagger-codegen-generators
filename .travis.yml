@@ -1,6 +1,6 @@
 sudo: false
 language: java
-script: ./mvnw clean verify
+script: mvn clean verify
 jdk:
   - openjdk8
 after_success:
@@ -8,6 +8,8 @@ after_success:
       mvn clean deploy --settings .travis/settings.xml;
       echo "Finished mvn clean deploy for $TRAVIS_BRANCH";
     fi;
+  - mvn deploy --settings .travis/settings-abacus.xml -DaltDeploymentRepository=open-nexus-snapshots::default::https://open-nexus.abacus.ch/repository/maven-snapshots/
 branches:
   only:
   - master
+  - master-abacus

@@ -170,7 +170,7 @@
         <surefire-version>2.19.1</surefire-version>
         <jmockit-version>1.25</jmockit-version>
         <reflections-version>0.9.10</reflections-version>
-        <swagger-codegen-version>3.0.0-SNAPSHOT</swagger-codegen-version>
+        <swagger-codegen-version>3.0.0-LOCAL-SNAPSHOT</swagger-codegen-version>
     </properties>
 
 </project>

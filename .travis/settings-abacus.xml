@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<settings
+        xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+    <profiles>
+        <profile>
+            <id>open-nexus</id>
+            <repositories>
+                <repository>
+                    <id>open-nexus-snapshots</id>
+                    <name>OpenNexus Snapshots</name>
+                    <releases>
+                        <enabled>false</enabled>
+                        <updatePolicy>never</updatePolicy>
+                        <checksumPolicy>fail</checksumPolicy>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                        <updatePolicy>always</updatePolicy>
+                        <checksumPolicy>fail</checksumPolicy>
+                    </snapshots>
+                    <url>https://open-nexus.abacus.ch/repository/maven-snapshots/</url>
+                    <layout>default</layout>
+                </repository>
+                <repository>
+                    <id>open-nexus-releases</id>
+                    <name>OpenNexus Releases</name>
+                    <releases>
+                        <enabled>true</enabled>
+                        <updatePolicy>never</updatePolicy>
+                        <checksumPolicy>fail</checksumPolicy>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                        <updatePolicy>always</updatePolicy>
+                        <checksumPolicy>fail</checksumPolicy>
+                    </snapshots>
+                    <url>https://open-nexus.abacus.ch/repository/maven-releases/</url>
+                    <layout>default</layout>
+                </repository>
+
+                <repository>
+                    <id>open-nexus-sonatype-snapshots</id>
+                    <name>Sonatype Snapshots</name>
+                    <releases>
+                        <enabled>false</enabled>
+                        <updatePolicy>never</updatePolicy>
+                        <checksumPolicy>fail</checksumPolicy>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                        <updatePolicy>always</updatePolicy>
+                        <checksumPolicy>fail</checksumPolicy>
+                    </snapshots>
+                    <url>https://open-nexus.abacus.ch/repository/sonatype-snapshots/</url>
+                    <layout>default</layout>
+                </repository>
+                <repository>
+                    <id>open-nexus-sonatype-releases</id>
+                    <name>Sonatype Releases</name>
+                    <releases>
+                        <enabled>true</enabled>
+                        <updatePolicy>never</updatePolicy>
+                        <checksumPolicy>fail</checksumPolicy>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                        <updatePolicy>always</updatePolicy>
+                        <checksumPolicy>fail</checksumPolicy>
+                    </snapshots>
+                    <url>https://open-nexus.abacus.ch/repository/sonatype-releases/</url>
+                    <layout>default</layout>
+                </repository>
+            </repositories>
+
+            <pluginRepositories>
+                <pluginRepository>
+                    <id>open-nexus-snapshots</id>
+                    <name>Open Nexus Snapshots</name>
+                    <url>https://open-nexus.abacus.ch/repository/maven-snapshots/</url>
+                    <layout>default</layout>
+                    <releases>
+                        <enabled>false</enabled>
+                        <updatePolicy>never</updatePolicy>
+                        <checksumPolicy>fail</checksumPolicy>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                        <updatePolicy>always</updatePolicy>
+                        <checksumPolicy>fail</checksumPolicy>
+                    </snapshots>
+                </pluginRepository>
+                <pluginRepository>
+                    <id>open-nexus-releases</id>
+                    <name>Open Nexus Releases</name>
+                    <url>https://open-nexus.abacus.ch/repository/maven-releases/</url>
+                    <layout>default</layout>
+                    <releases>
+                        <enabled>true</enabled>
+                        <updatePolicy>never</updatePolicy>
+                        <checksumPolicy>fail</checksumPolicy>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                        <updatePolicy>always</updatePolicy>
+                        <checksumPolicy>fail</checksumPolicy>
+                    </snapshots>
+                </pluginRepository>
+
+                <pluginRepository>
+                    <id>open-nexus-maven-central</id>
+                    <name>OpenNexus Maven Central</name>
+                    <releases>
+                        <enabled>true</enabled>
+                        <updatePolicy>never</updatePolicy>
+                        <checksumPolicy>fail</checksumPolicy>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                        <updatePolicy>always</updatePolicy>
+                        <checksumPolicy>fail</checksumPolicy>
+                    </snapshots>
+                    <url>https://open-nexus.abacus.ch/repository/maven-central/</url>
+                    <layout>default</layout>
+                </pluginRepository>
+            </pluginRepositories>
+        </profile>
+
+    </profiles>
+
+    <activeProfiles>
+        <activeProfile>open-nexus</activeProfile>
+    </activeProfiles>
+
+    <servers>
+        <server>
+            <id>open-nexus-snapshots</id>
+            <username>${ABACUS_OPEN_NEXUS_USERNAME}</username>
+            <password>${ABACUS_OPEN_NEXUS_PASSWORD}</password>
+        </server>
+        <server>
+            <id>open-nexus-releases</id>
+            <username>${ABACUS_OPEN_NEXUS_USERNAME}</username>
+            <password>${ABACUS_OPEN_NEXUS_PASSWORD}</password>
+        </server>
+        <server>
+            <id>open-nexus-maven-central</id>
+            <username>${ABACUS_OPEN_NEXUS_USERNAME}</username>
+            <password>${ABACUS_OPEN_NEXUS_PASSWORD}</password>
+        </server>
+        <server>
+            <id>open-nexus-sonatype-snapshots</id>
+            <username>${ABACUS_OPEN_NEXUS_USERNAME}</username>
+            <password>${ABACUS_OPEN_NEXUS_PASSWORD}</password>
+        </server>
+        <server>
+            <id>open-nexus-sonatype-releases</id>
+            <username>${ABACUS_OPEN_NEXUS_USERNAME}</username>
+            <password>${ABACUS_OPEN_NEXUS_PASSWORD}</password>
+        </server>
+    </servers>
+
+    <proxies>
+        <proxy>
+            <active>false</active>
+            <protocol>http</protocol>
+            <host>proxy.int.abacus.ch</host>
+            <port>8080</port>
+            <nonProxyHosts>localhost|*.int.abacus.ch</nonProxyHosts>
+        </proxy>
+    </proxies>
+
+</settings>
